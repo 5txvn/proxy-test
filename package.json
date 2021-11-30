@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/exoticchild/proxy-test/issues"
   },
-  "homepage": "https://github.com/exoticchild/proxy-test#readme"
+  "homepage": "https://github.com/exoticchild/proxy-test#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "http-proxy": "^1.18.1",
+    "request": "^2.88.2"
+  }
 }
