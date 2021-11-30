@@ -1,26 +1,59 @@
+var express = require('express')
+var app = express()
+var https = require('https');
 var http = require('http');
+const { response } = require('express');
 
-http.createServer(onRequest).listen(8080);
 
-function onRequest(client_req, client_res) {
-  console.log('serve: ' + client_req.url);
+app.use('/', function(clientRequest, clientResponse) {
+    var url;
+    url = clientRequest.query.url
+    var parsedHost = url.split('/').splice(2).splice(0, 1).join('/')
+    var parsedPort;
+    var parsedSSL;
+    if (url.startsWith('https://')) {
+        parsedPort = 443
+        parsedSSL = https
+    } else if (url.startsWith('http://')) {
+        parsedPort = 80
+        parsedSSL = http
+    }
+    var options = { 
+      hostname: parsedHost,
+      port: parsedPort,
+      path: clientRequest.url,
+      method: clientRequest.method,
+      headers: {
+        'User-Agent': clientRequest.headers['user-agent']
+      }
+    };  
+  
+    var serverRequest = parsedSSL.request(options, function(serverResponse) { 
+      var body = '';   
+      if (String(serverResponse.headers['content-type']).indexOf('text/html') !== -1) {
+        serverResponse.on('data', function(chunk) {
+          body += chunk;
+        }); 
+  
+        serverResponse.on('end', function() {
+          // Make changes to HTML files when they're done being read.
+          body = body.replace(`example`, `Cat!` );
+  
+          clientResponse.writeHead(serverResponse.statusCode, serverResponse.headers);
+          clientResponse.end(body);
+        }); 
+      }   
+      else {
+        serverResponse.pipe(clientResponse, {
+          end: true
+        }); 
+        clientResponse.contentType(serverResponse.headers['content-type'])
+      }   
+    }); 
+  
+    serverRequest.end();
+  });    
 
-  var options = {
-    hostname: 'www.reddit.com',
-    port: 80,
-    path: client_req.url,
-    method: client_req.method,
-    headers: client_req.headers
-  };
 
-  var proxy = http.request(options, function (res) {
-    client_res.writeHead(res.statusCode, res.headers)
-    res.pipe(client_res, {
-      end: true
-    });
-  });
-
-  client_req.pipe(proxy, {
-    end: true
-  });
-}
+  app.listen(3000)
+  console.log('Running on 0.0.0.0:3000')
