@@ -2,6 +2,7 @@ var express = require('express')
 var app = express()
 var https = require('https');
 var http = require('http');
+const port = process.env.PORT || 3000;
 const { response } = require('express');
 
 
@@ -55,5 +56,4 @@ app.use('/', function(clientRequest, clientResponse) {
   });    
 
 
-  app.listen(3000)
-  console.log('Running on 0.0.0.0:3000')
+  app.listen(port)
