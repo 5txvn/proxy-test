@@ -8,7 +8,7 @@ const { response } = require('express');
 
 app.use('/', function(clientRequest, clientResponse) {
     var url;
-    url = clientRequest.query.url
+    url = "https://" + clientRequest.query.url
     var parsedHost = url.split('/').splice(2).splice(0, 1).join('/')
     var parsedPort;
     var parsedSSL;
