@@ -2,13 +2,13 @@ var express = require('express')
 var app = express()
 var https = require('https');
 var http = require('http');
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 const { response } = require('express');
 
 
-app.use('/', function(clientRequest, clientResponse) {
+app.use('/:url', function(clientRequest, clientResponse) {
     var url;
-    url = "https://" + clientRequest.query.url
+    url = "https://" + clientRequest.params.url
     var parsedHost = url.split('/').splice(2).splice(0, 1).join('/')
     var parsedPort;
     var parsedSSL;
@@ -56,4 +56,4 @@ app.use('/', function(clientRequest, clientResponse) {
   });    
 
 
-  app.listen(port)
+  app.listen(PORT)
